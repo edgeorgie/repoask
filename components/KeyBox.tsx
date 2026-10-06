@@ -31,22 +31,20 @@ export default function KeyBox({ value, onChange }: { value: LlmSettings; onChan
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition ${
-          value.key ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-200" : "border-amber-400/40 bg-amber-400/10 text-amber-200"
+        className={`flex items-center gap-2 rounded-full border px-4 py-2 text-[13px] font-semibold transition hover:-translate-y-0.5 ${
+          value.key ? "border-teal-700/30 bg-teal-50 text-teal-800" : "border-ink bg-ink text-white"
         }`}
       >
-        <span className={`h-1.5 w-1.5 rounded-full ${value.key ? "bg-emerald-400" : "bg-amber-400"}`} />
-        {value.key ? `${PROVIDERS[value.provider].label} key set` : "Add your API key"}
+        <span className={`h-2 w-2 rounded-full ${value.key ? "bg-teal-500" : "bg-amber-300"}`} />
+        {value.key ? `${PROVIDERS[value.provider].label} key set` : "Add API key"}
       </button>
       {open && (
-        <div className="absolute right-0 z-10 mt-2 w-72 rounded-2xl border border-white/10 bg-[#10131c] p-4 shadow-2xl">
-          <p className="mb-3 text-xs text-zinc-400">
-            Used only for the final answer. It stays in this browser and calls go straight to the provider.
-          </p>
+        <div className="slide-up absolute right-0 z-20 mt-3 w-72 rounded-2xl border border-line bg-white p-4 shadow-2xl">
+          <p className="mb-3 text-xs text-ink-soft">Used only to write the final answer. It stays in this browser and calls go straight to the provider.</p>
           <select
             value={value.provider}
             onChange={(e) => update({ ...value, provider: e.target.value as Provider })}
-            className="mb-2 w-full rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 text-sm"
+            className="mb-2 w-full rounded-lg border border-line bg-bg px-2 py-2 text-sm"
           >
             {Object.entries(PROVIDERS).map(([k, v]) => (
               <option key={k} value={k}>{v.label}</option>
@@ -57,7 +55,7 @@ export default function KeyBox({ value, onChange }: { value: LlmSettings; onChan
             value={value.key}
             onChange={(e) => update({ ...value, key: e.target.value })}
             placeholder="API key"
-            className="w-full rounded-lg border border-white/10 bg-black/30 px-2 py-1.5 text-sm outline-none focus:border-violet-400/60"
+            className="w-full rounded-lg border border-line bg-bg px-2 py-2 text-sm outline-none focus:border-teal-600"
           />
         </div>
       )}
