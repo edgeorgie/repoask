@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
   "dependencies": {
@@ -24,5 +25,14 @@
     "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "description": "Ask any public GitHub repo a question. Local embeddings in the browser, answers that point at the exact lines.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edgeorgie/repoask.git"
   }
 }

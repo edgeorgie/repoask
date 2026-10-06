@@ -180,7 +180,7 @@ export default function Home() {
               {STEPS.map((s, i) => (
                 <li key={s} className={`flex items-center gap-3 text-[15px] transition ${i <= info.step ? "text-ink" : "text-ink-soft/50"}`}>
                   <span className={`grid h-6 w-6 place-items-center rounded-full text-[11px] font-bold ${i < info.step ? "bg-teal-deep text-white" : i === info.step ? "bg-ink text-white" : "bg-ink/10"}`}>
-                    {i < info.step ? "✓" : i + 1}
+                    {i < info.step ? <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 8.5l3.2 3.2L13 5" /></svg> : i + 1}
                   </span>
                   {s}
                 </li>
