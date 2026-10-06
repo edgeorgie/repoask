@@ -8,7 +8,7 @@ Ask any public GitHub repo a question and get an answer that cites the exact lin
 2. Splits files into overlapping chunks (Markdown breaks on headings).
 3. Embeds the chunks locally in a Web Worker with [Transformers.js](https://github.com/huggingface/transformers.js) (`all-MiniLM-L6-v2`, quantized, about 23 MB, cached after the first run).
 4. For each question, finds the most similar chunks by cosine similarity, keeps at most two per file, and asks an LLM to answer using only those sources.
-5. Answers carry clickable `[n]` citations that open the exact lines on GitHub.
+5. Answers carry clickable `[n]` citations. Pick one and the built-in code viewer opens that file and scrolls to the exact lines, highlighted. A link opens the same lines on GitHub.
 
 Retrieval is free and local. Only the final answer needs a model: bring your own Anthropic or OpenAI key. The key stays in your browser and requests go straight to the provider.
 

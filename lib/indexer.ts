@@ -16,6 +16,7 @@ export interface RepoIndex {
   chunks: Chunk[];
   vectors: Float32Array[];
   fileCount: number;
+  texts: Record<string, string>;
   truncated: boolean;
 }
 
@@ -61,5 +62,9 @@ export async function indexRepo(ref: RepoRef, embedder: Embedder, onStage: (s: S
     vectors.push(...(await embedder.embed(batch)));
     onStage({ kind: "embedding", done: Math.min(i + BATCH, chunks.length), total: chunks.length });
   }
-  return { ref, branch, chunks, vectors, fileCount: files.length, truncated };
+  const textMap: Record<string, string> = {};
+  files.forEach((f, i) => {
+    textMap[f.path] = texts[i];
+  });
+  return { ref, branch, chunks, vectors, fileCount: files.length, texts: textMap, truncated };
 }
