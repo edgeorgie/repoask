@@ -16,7 +16,7 @@ A self-assessment against a reviewer's rubric. It states gaps plainly so a revie
 | Accessibility | Partial | Citation chips are buttons with titles; the code viewer is scrollable but not announced as a region. Not audited with automated tooling. |
 | Performance | Partial | Indexing a 100 file repository takes about a minute, dominated by embedding. Not measured with Lighthouse. |
 | Security | Partial | The key lives in sessionStorage by default and in localStorage only if the user opts in. Baseline security headers are set (nosniff, frame denial, referrer and permissions policies). No Content Security Policy is configured. |
-| Deployment | Gap | Not deployed yet. A Vercel deploy button is in the README. |
+| Deployment | Pass | Live on Vercel at https://repoask.vercel.app, with security headers served by the host. The main flow was exercised on the deployed site. |
 | Licensing | Pass | MIT. Third-party: Transformers.js (Apache-2.0). |
 
 ## Verify it yourself
