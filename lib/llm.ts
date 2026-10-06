@@ -25,7 +25,7 @@ export async function complete(
       },
       body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: "user", content: prompt }] }),
     });
-    if (!res.ok) throw new Error(`Anthropic error ${res.status}`);
+    if (!res.ok) throw providerError("Anthropic", res.status);
     const j = (await res.json()) as { content: { text?: string }[] };
     return j.content.map((c) => c.text ?? "").join("");
   }
@@ -38,7 +38,19 @@ export async function complete(
       messages: [{ role: "system", content: system }, { role: "user", content: prompt }],
     }),
   });
-  if (!res.ok) throw new Error(`OpenAI error ${res.status}`);
+  if (!res.ok) throw providerError("OpenAI", res.status);
   const j = (await res.json()) as { choices: { message: { content: string } }[] };
   return j.choices[0]?.message.content ?? "";
+}
+
+export function providerError(label: string, status: number): Error {
+  const hint =
+    status === 401 || status === 403
+      ? "Check your API key."
+      : status === 429
+        ? "Rate limit reached. Wait a moment and retry."
+        : status >= 500
+          ? "The provider is having problems. Try again later."
+          : "The provider rejected the request.";
+  return new Error(`${label} error ${status}. ${hint}`);
 }
