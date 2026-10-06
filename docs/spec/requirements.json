@@ -1,0 +1,98 @@
+[
+  {
+    "id": "FR-1",
+    "title": "Parse repository references",
+    "status": "Verified",
+    "acceptance": [
+      "Given owner/name or a GitHub URL (optionally with a branch), then the owner, repo and ref are extracted; other hosts are rejected."
+    ],
+    "implementation": [
+      "lib/repo.ts"
+    ],
+    "tests": [
+      "tests/rag.test.ts"
+    ],
+    "evidence": "PR 1: parsing tests."
+  },
+  {
+    "id": "FR-2",
+    "title": "Select indexable files",
+    "status": "Verified",
+    "acceptance": [
+      "Given a repository tree, then lockfiles, vendored and generated files, binaries and oversized files are excluded and README and docs rank first, capped at 120 files."
+    ],
+    "implementation": [
+      "lib/repo.ts"
+    ],
+    "tests": [
+      "tests/rag.test.ts"
+    ],
+    "evidence": "PR 1: selection and ranking test."
+  },
+  {
+    "id": "FR-3",
+    "title": "Chunking",
+    "status": "Verified",
+    "acceptance": [
+      "Given a file, then overlapping line windows keep original line numbers and Markdown breaks on headings."
+    ],
+    "implementation": [
+      "lib/chunk.ts"
+    ],
+    "tests": [
+      "tests/rag.test.ts"
+    ],
+    "evidence": "PR 1: chunk boundary tests."
+  },
+  {
+    "id": "FR-4",
+    "title": "Local embeddings and retrieval",
+    "status": "Verified",
+    "acceptance": [
+      "Given indexed chunks and a question, then the most similar chunks are returned with at most two per file."
+    ],
+    "implementation": [
+      "lib/embed.worker.ts",
+      "lib/embedder.ts",
+      "lib/indexer.ts",
+      "lib/vector.ts"
+    ],
+    "tests": [
+      "tests/rag.test.ts"
+    ],
+    "evidence": "PR 1: ranking and diversity tests; real run on sindresorhus/ky indexed 93 files into 475 chunks and returned the test files for a testing question."
+  },
+  {
+    "id": "FR-5",
+    "title": "Cited answers",
+    "status": "Implemented, not verified end to end",
+    "acceptance": [
+      "Given retrieved sources and a key, then the model is instructed to answer only from them and cite as [n]; citations map to sources.",
+      "Given no key, then retrieval results are still shown."
+    ],
+    "implementation": [
+      "lib/rag.ts",
+      "lib/llm.ts",
+      "app/page.tsx"
+    ],
+    "tests": [
+      "tests/rag.test.ts"
+    ],
+    "evidence": "PR 1: prompt and citation tests. Written answer verified with a scripted model reply, not a real provider."
+  },
+  {
+    "id": "FR-6",
+    "title": "Code viewer synced to citations",
+    "status": "Verified",
+    "acceptance": [
+      "Given an answer with citations, when the user picks one, then the viewer opens that file, scrolls to the lines and highlights them."
+    ],
+    "implementation": [
+      "components/CodeViewer.tsx",
+      "components/Answer.tsx",
+      "app/page.tsx"
+    ],
+    "tests": [],
+    "evidence": "manual: PR 2, in Chrome citation 1 opened readme.md and citation 2 switched to test/type-guards.ts with its lines highlighted."
+  }
+]
