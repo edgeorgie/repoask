@@ -61,6 +61,12 @@ Status: Verified.
 
 - Given an answer with citations, when the user picks one, then the viewer opens that file, scrolls to the lines and highlights them.
 
+### FR-7 Provider key kept in the session by default
+
+Status: Implemented, not verified end to end.
+
+- Given a provider key, then it is kept in sessionStorage for the tab by default, kept on the device only when the user ticks "Remember on this device", and removable with "Clear key"; the provider choice persists.
+
 ## Open risks
 
 - GitHub allows 60 unauthenticated API calls per hour per IP; each index uses two.
