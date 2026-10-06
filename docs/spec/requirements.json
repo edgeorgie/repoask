@@ -94,5 +94,22 @@
     ],
     "tests": [],
     "evidence": "manual: PR 2, in Chrome citation 1 opened readme.md and citation 2 switched to test/type-guards.ts with its lines highlighted."
+  },
+  {
+    "id": "FR-7",
+    "title": "Provider key kept in the session by default",
+    "status": "Implemented, not verified end to end",
+    "acceptance": [
+      "Given a provider key, then it is kept in sessionStorage for the tab by default, kept on the device only when the user ticks \"Remember on this device\", and removable with \"Clear key\"; the provider choice persists."
+    ],
+    "implementation": [
+      "lib/keystore.ts",
+      "components/KeyNotes.tsx",
+      "components/KeyBox.tsx"
+    ],
+    "tests": [
+      "tests/keystore.test.ts"
+    ],
+    "evidence": "Key store tests; typecheck and build (SEC-002). Not exercised in a browser because the app needs a model download that awaits the user's permission."
   }
 ]

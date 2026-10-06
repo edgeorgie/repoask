@@ -1,22 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import KeyNotes from "@/components/KeyNotes";
+import { clearKeys, readKeys, writeKeys } from "@/lib/keystore";
 import { PROVIDERS } from "@/lib/llm";
 import type { Provider } from "@/lib/llm";
 
 export interface LlmSettings {
   provider: Provider;
   key: string;
+  remember?: boolean;
 }
 
 const STORE = "repoask.llm";
+const KEY = "repoask.llm.key";
+const HOSTS: Record<Provider, string> = { anthropic: "api.anthropic.com", openai: "api.openai.com" };
 
 export function loadSettings(): LlmSettings {
+  const settings: LlmSettings = { provider: "anthropic", key: "", remember: false };
   try {
     const raw = localStorage.getItem(STORE);
-    if (raw) return JSON.parse(raw) as LlmSettings;
+    if (raw) {
+      const stored = JSON.parse(raw) as { provider?: Provider; key?: string };
+      if (stored.provider) settings.provider = stored.provider;
+      if (stored.key) {
+        sessionStorage.setItem(KEY, JSON.stringify({ key: stored.key }));
+        localStorage.setItem(STORE, JSON.stringify({ provider: settings.provider }));
+      }
+    }
+    const keys = readKeys<{ key: string }>(KEY, sessionStorage, localStorage);
+    settings.key = keys.value?.key ?? "";
+    settings.remember = keys.remember;
   } catch {}
-  return { provider: "anthropic", key: "" };
+  return settings;
 }
 
 export default function KeyBox({ value, onChange }: { value: LlmSettings; onChange: (s: LlmSettings) => void }) {
@@ -24,7 +40,9 @@ export default function KeyBox({ value, onChange }: { value: LlmSettings; onChan
   const update = (next: LlmSettings) => {
     onChange(next);
     try {
-      localStorage.setItem(STORE, JSON.stringify(next));
+      localStorage.setItem(STORE, JSON.stringify({ provider: next.provider }));
+      if (next.key) writeKeys(KEY, { key: next.key }, Boolean(next.remember), sessionStorage, localStorage);
+      else clearKeys(KEY, sessionStorage, localStorage);
     } catch {}
   };
   return (
@@ -40,7 +58,7 @@ export default function KeyBox({ value, onChange }: { value: LlmSettings; onChan
       </button>
       {open && (
         <div className="slide-up absolute right-0 z-20 mt-3 w-72 rounded-2xl border border-line bg-white p-4 shadow-2xl">
-          <p className="mb-3 text-xs text-ink-soft">Used only to write the final answer. It stays in this browser and calls go straight to the provider.</p>
+          <p className="mb-3 text-xs text-ink-soft">Used only to write the final answer.</p>
           <select
             value={value.provider}
             onChange={(e) => update({ ...value, provider: e.target.value as Provider })}
@@ -57,6 +75,9 @@ export default function KeyBox({ value, onChange }: { value: LlmSettings; onChan
             placeholder="API key"
             className="w-full rounded-lg border border-line bg-bg px-2 py-2 text-sm outline-none focus:border-teal-600"
           />
+          <div className="mt-3">
+            <KeyNotes host={HOSTS[value.provider]} remember={Boolean(value.remember)} hasKey={Boolean(value.key)} onRemember={(remember) => update({ ...value, remember })} onClear={() => update({ ...value, key: "" })} />
+          </div>
         </div>
       )}
     </div>
