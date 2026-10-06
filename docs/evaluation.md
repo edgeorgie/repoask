@@ -15,7 +15,7 @@ A self-assessment against a reviewer's rubric. It states gaps plainly so a revie
 | Privacy and data flow | Pass | Every data path and its storage is tabulated in the README. |
 | Accessibility | Partial | Citation chips are buttons with titles; the code viewer is scrollable but not announced as a region. Not audited with automated tooling. |
 | Performance | Partial | Indexing a 100 file repository takes about a minute, dominated by embedding. Not measured with Lighthouse. |
-| Security | Partial | The key lives in localStorage. No Content Security Policy is configured. |
+| Security | Partial | The key lives in localStorage. Baseline security headers are set (nosniff, frame denial, referrer and permissions policies). No Content Security Policy is configured. |
 | Deployment | Gap | Not deployed yet. A Vercel deploy button is in the README. |
 | Licensing | Pass | MIT. Third-party: Transformers.js (Apache-2.0). |
 
