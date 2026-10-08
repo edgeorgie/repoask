@@ -2,6 +2,8 @@
 
 Ask a public GitHub repository questions and get answers that point at the exact lines.
 
+![repoask home screen: a headline and a field to index a public repository](docs/assets/home.png)
+
 - Ask a public repository questions and get cited answers
 - In-browser indexing with local embeddings, no repository content uploaded
 - Code viewer that scrolls to the exact cited lines
