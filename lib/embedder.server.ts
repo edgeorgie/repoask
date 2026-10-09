@@ -5,6 +5,14 @@ import type { Embeddable } from "./embedder-types";
 // (Next.js keeps server-only files out of the client graph as long as nothing
 // under app/ or components/ imports it directly — only api/* routes do).
 env.allowLocalModels = false;
+// Vercel's serverless runtime ships the function bundle (node_modules
+// included) as a read-only filesystem under /var/task — only /tmp is
+// writable. transformers.js defaults its download cache to a path inside
+// node_modules, which works locally but throws ENOENT on first mkdir in
+// production. Point it at /tmp instead (ephemeral per instance, which is
+// fine — it just means the model re-downloads on a cold start, same as any
+// other serverless cold-start cost).
+env.cacheDir = "/tmp/transformers-cache";
 
 type Extractor = (
   input: string[],
