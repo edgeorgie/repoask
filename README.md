@@ -2,6 +2,10 @@
 
 Ask a public GitHub repository questions and get answers that point at the exact lines.
 
+## How this differs from repoask-mcp
+
+repoask runs entirely in your browser: it can be hosted as static files, embeddings are computed locally with a transformer model (MiniLM via Transformers.js), and no repository content or question ever reaches a server you control — use this when you want a human-only, zero-backend, privacy-first tool for one-off questions. [repoask-mcp](https://github.com/edgeorgie/repoask-mcp) is a different engine built for AI agents: a persistent, cloud-deployed MCP server exposing `index_repo`/`ask_repo` as callable tools over stdio or Streamable HTTP, using server-side TF-IDF retrieval instead of in-browser neural embeddings. If an agent (Claude Desktop, Cursor, a script) needs to query a repo programmatically and repeatedly without a browser session, use repoask-mcp instead.
+
 ![repoask home screen: a headline and a field to index a public repository](docs/assets/home.png)
 
 - Ask a public repository questions and get cited answers
