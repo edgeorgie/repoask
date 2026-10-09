@@ -1,7 +1,9 @@
+import type { Embeddable } from "./embedder-types";
+
 type Pending = { resolve: (v: Float32Array[]) => void; reject: (e: Error) => void };
 
 /** Thin client for the embedding worker. Embedding runs locally in the browser, no API key and no server. */
-export class Embedder {
+export class Embedder implements Embeddable {
   private worker: Worker;
   private pending = new Map<number, Pending>();
   private nextId = 1;

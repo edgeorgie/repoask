@@ -1,6 +1,6 @@
 import { chunkFile, embedText } from "./chunk";
 import type { Chunk } from "./chunk";
-import type { Embedder } from "./embedder";
+import type { Embeddable } from "./embedder-types";
 import { fetchFileText, fetchRepoFiles } from "./repo";
 import type { RepoRef } from "./repo";
 
@@ -34,7 +34,7 @@ async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T) => Promis
   return out;
 }
 
-export async function indexRepo(ref: RepoRef, embedder: Embedder, onStage: (s: Stage) => void): Promise<RepoIndex> {
+export async function indexRepo(ref: RepoRef, embedder: Embeddable, onStage: (s: Stage) => void): Promise<RepoIndex> {
   onStage({ kind: "listing" });
   const { branch, files, truncated } = await fetchRepoFiles(ref);
   if (files.length === 0) throw new Error("No indexable text files were found in this repository.");

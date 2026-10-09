@@ -2,11 +2,11 @@
 
 > Ask a public GitHub repository questions and get answers that point at the exact lines.
 
-repoask is a client-side Next.js application. API keys and user content stay in the browser. The specification is the source of truth; `npm run verify` is the deterministic quality gate.
+repoask is a Next.js application with two entry points: a client-side web UI (API keys and user content stay in the browser) and a server-side MCP endpoint at `/api/mcp` for AI agents. Both call the same chunking/retrieval logic. The specification is the source of truth; `npm run verify` is the deterministic quality gate.
 
 ## Documentation
 
-- [README](https://github.com/edgeorgie/repoask/blob/main/README.md): what it does, how to run it, data flow
+- [README](https://github.com/edgeorgie/repoask/blob/main/README.md): what it does, how to run it, data flow, and the MCP server for agents
 - [Specification](https://github.com/edgeorgie/repoask/blob/main/docs/spec/spec.md): requirements and acceptance criteria
 - [Requirements as JSON](https://github.com/edgeorgie/repoask/blob/main/docs/spec/requirements.json): machine-readable list with status, files and tests
 - [Traceability](https://github.com/edgeorgie/repoask/blob/main/docs/spec/traceability.md): requirement to code, test and evidence

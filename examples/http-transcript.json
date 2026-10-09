@@ -1,0 +1,333 @@
+{
+  "serverUrl": "https://repoask.vercel.app/api/mcp",
+  "transport": "streamable-http",
+  "testedAt": "2026-10-09T22:40:48.262Z",
+  "steps": [
+    {
+      "step": "list_tools",
+      "request": {
+        "method": "tools/list"
+      },
+      "response": {
+        "tools": [
+          {
+            "name": "index_repo",
+            "title": "Index a public GitHub repository",
+            "description": "Fetches a public GitHub repository's text files (source, docs, config — skips binaries, lockfiles, node_modules/dist/build/vendor), splits them into overlapping line-range chunks (same chunker repoask's browser UI uses), and embeds them with the local MiniLM model (Xenova/all-MiniLM-L6-v2, no external embedding API, no paid key required) entirely on the server. Must be called once before ask_repo for a given owner/repo. Re-calling re-indexes from the current default branch (or a specific ref if given). Large repos are capped at 120 files / 80KB per file to keep indexing fast and free.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "GitHub organization or user, e.g. 'octocat'"
+                },
+                "repo": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Repository name, e.g. 'Hello-World'"
+                },
+                "ref": {
+                  "description": "Optional branch, tag, or commit SHA. Defaults to the repo's default branch.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "owner",
+                "repo"
+              ],
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "outputSchema": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "string"
+                },
+                "repo": {
+                  "type": "string"
+                },
+                "branch": {
+                  "type": "string"
+                },
+                "fileCount": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "chunkCount": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "truncated": {
+                  "type": "boolean",
+                  "description": "True if GitHub's tree API truncated the file listing (very large repo)."
+                },
+                "indexedAt": {
+                  "type": "string",
+                  "description": "ISO-8601 timestamp of indexing."
+                }
+              },
+              "required": [
+                "owner",
+                "repo",
+                "branch",
+                "fileCount",
+                "chunkCount",
+                "truncated",
+                "indexedAt"
+              ],
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "ask_repo",
+            "title": "Ask a question about an indexed GitHub repository",
+            "description": "Answers a natural-language question about a GitHub repository that was previously indexed with index_repo (auto-indexes on first use if not yet indexed). Retrieves the most relevant chunks via the same local MiniLM-embedding cosine search repoask's browser UI uses and returns them as citations with exact path + start/end line numbers. If ANTHROPIC_API_KEY or OPENAI_API_KEY is set in the server environment, also returns a synthesized prose answer with inline [n] citation markers referencing the citations array. If no LLM key is configured, 'answer' is a deterministic citation dump (no generation) and 'answerMode' is 'deterministic' — callers should treat the citations array as the ground truth either way.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "GitHub organization or user."
+                },
+                "repo": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Repository name."
+                },
+                "question": {
+                  "type": "string",
+                  "minLength": 3,
+                  "description": "Natural-language question about the repo's code or docs."
+                },
+                "topK": {
+                  "description": "Number of citations to return. Default 6.",
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20
+                }
+              },
+              "required": [
+                "owner",
+                "repo",
+                "question"
+              ],
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "outputSchema": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "string"
+                },
+                "repo": {
+                  "type": "string"
+                },
+                "question": {
+                  "type": "string"
+                },
+                "answer": {
+                  "type": "string"
+                },
+                "answerMode": {
+                  "type": "string",
+                  "enum": [
+                    "llm",
+                    "deterministic"
+                  ]
+                },
+                "model": {
+                  "type": "string"
+                },
+                "citations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "rank": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "startLine": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "endLine": {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      },
+                      "score": {
+                        "type": "number"
+                      },
+                      "excerpt": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "rank",
+                      "path",
+                      "startLine",
+                      "endLine",
+                      "score",
+                      "excerpt"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "owner",
+                "repo",
+                "question",
+                "answer",
+                "answerMode",
+                "citations"
+              ],
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "list_indexed_repos",
+            "title": "List repositories currently indexed in this server's memory",
+            "description": "Returns the owner/repo keys currently held in this server process's in-memory index cache. Useful for debugging or to check whether index_repo needs to be called before ask_repo.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {},
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "outputSchema": {
+              "type": "object",
+              "properties": {
+                "repos": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "repos"
+              ],
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "additionalProperties": false
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          }
+        ]
+      },
+      "timestamp": "2026-10-09T22:40:43.090Z"
+    },
+    {
+      "step": "index_repo",
+      "request": {
+        "method": "tools/call",
+        "params": {
+          "name": "index_repo",
+          "arguments": {
+            "owner": "octocat",
+            "repo": "Spoon-Knife"
+          }
+        }
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Indexed octocat/Spoon-Knife@main: 3 files -> 3 chunks. Call ask_repo({ owner: \"octocat\", repo: \"Spoon-Knife\", question: ... }) next."
+          }
+        ],
+        "structuredContent": {
+          "owner": "octocat",
+          "repo": "Spoon-Knife",
+          "branch": "main",
+          "fileCount": 3,
+          "chunkCount": 3,
+          "truncated": false,
+          "indexedAt": "2026-10-09T22:40:44.052Z"
+        }
+      },
+      "timestamp": "2026-10-09T22:40:44.070Z"
+    },
+    {
+      "step": "ask_repo",
+      "request": {
+        "method": "tools/call",
+        "params": {
+          "name": "ask_repo",
+          "arguments": {
+            "owner": "octocat",
+            "repo": "Spoon-Knife",
+            "question": "What does this repository demonstrate and how do you use it?"
+          }
+        }
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "No LLM key configured (ANTHROPIC_API_KEY / OPENAI_API_KEY) — returning the top-matching source excerpts directly with their citations. Read the cited file+line ranges to answer the question yourself, or set an LLM key on the server for prose synthesis.\n\n[1] README.md (lines 1-10):\n### Well hello there!\n\nThis repository is meant to provide an example for *forking* a repository on GitHub.\n\nCreating a *fork* is producing a personal copy of someone else's project. Forks act as a sort of bridge between the original repository and your personal copy. You can submit *Pull Requests* to help make other people's projects better by offering your changes up to the original project. Forking is at the core of social coding at GitHub.\n\nAfter forking this repository, you can make some changes to the project, and submit [a Pull Request](https://github.com/octocat/Spoon-Knife/pulls) as practice.\n"
+          }
+        ],
+        "structuredContent": {
+          "owner": "octocat",
+          "repo": "Spoon-Knife",
+          "question": "What does this repository demonstrate and how do you use it?",
+          "answer": "No LLM key configured (ANTHROPIC_API_KEY / OPENAI_API_KEY) — returning the top-matching source excerpts directly with their citations. Read the cited file+line ranges to answer the question yourself, or set an LLM key on the server for prose synthesis.\n\n[1] README.md (lines 1-10):\n### Well hello there!\n\nThis repository is meant to provide an example for *forking* a repository on GitHub.\n\nCreating a *fork* is producing a personal copy of someone else's project. Forks act as a sort of bridge between the original repository and your personal copy. You can submit *Pull Requests* to help make other people's projects better by offering your changes up to the original project. Forking is at the core of social coding at GitHub.\n\nAfter forking this repository, you can make some changes to the project, and submit [a Pull Request](https://github.com/octocat/Spoon-Knife/pulls) as practice.\n",
+          "answerMode": "deterministic",
+          "citations": [
+            {
+              "rank": 1,
+              "path": "README.md",
+              "startLine": 1,
+              "endLine": 10,
+              "score": 0.487,
+              "excerpt": "### Well hello there!\n\nThis repository is meant to provide an example for *forking* a repository on GitHub.\n\nCreating a *fork* is producing a personal copy of someone else's project. Forks act as a sort of bridge between the original repository and your personal copy. You can submit *Pull Requests* to help make other people's projects better by offering your changes up to the original project. Forking is at the core of social coding at GitHub.\n\nAfter forking this repository, you can make some changes to the project, and submit [a Pull Request](https://github.com/octocat/Spoon-Knife/pulls) as practice.\n\nFor some more information on how to fork a repository, [check out our guide, \"Forking Projects\"\"](http://guides.github.com/overviews/forking/). Thanks! :sparkling_heart:"
+            }
+          ]
+        }
+      },
+      "timestamp": "2026-10-09T22:40:46.988Z"
+    },
+    {
+      "step": "list_indexed_repos",
+      "request": {
+        "method": "tools/call",
+        "params": {
+          "name": "list_indexed_repos",
+          "arguments": {}
+        }
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "(no repos indexed yet in this process)"
+          }
+        ],
+        "structuredContent": {
+          "repos": []
+        }
+      },
+      "timestamp": "2026-10-09T22:40:48.261Z"
+    }
+  ]
+}
