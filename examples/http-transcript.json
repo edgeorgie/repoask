@@ -1,7 +1,7 @@
 {
   "serverUrl": "https://repoask.vercel.app/api/mcp",
   "transport": "streamable-http",
-  "testedAt": "2026-10-09T22:40:48.262Z",
+  "testedAt": "2026-10-09T22:54:32.350Z",
   "steps": [
     {
       "step": "list_tools",
@@ -234,7 +234,7 @@
           }
         ]
       },
-      "timestamp": "2026-10-09T22:40:43.090Z"
+      "timestamp": "2026-10-09T22:54:30.696Z"
     },
     {
       "step": "index_repo",
@@ -262,10 +262,10 @@
           "fileCount": 3,
           "chunkCount": 3,
           "truncated": false,
-          "indexedAt": "2026-10-09T22:40:44.052Z"
+          "indexedAt": "2026-10-09T22:54:32.223Z"
         }
       },
-      "timestamp": "2026-10-09T22:40:44.070Z"
+      "timestamp": "2026-10-09T22:54:32.242Z"
     },
     {
       "step": "ask_repo",
@@ -305,7 +305,7 @@
           ]
         }
       },
-      "timestamp": "2026-10-09T22:40:46.988Z"
+      "timestamp": "2026-10-09T22:54:32.315Z"
     },
     {
       "step": "list_indexed_repos",
@@ -320,14 +320,16 @@
         "content": [
           {
             "type": "text",
-            "text": "(no repos indexed yet in this process)"
+            "text": "octocat/spoon-knife"
           }
         ],
         "structuredContent": {
-          "repos": []
+          "repos": [
+            "octocat/spoon-knife"
+          ]
         }
       },
-      "timestamp": "2026-10-09T22:40:48.261Z"
+      "timestamp": "2026-10-09T22:54:32.349Z"
     }
   ]
 }
