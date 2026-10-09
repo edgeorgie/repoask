@@ -91,7 +91,7 @@ console.log(result.structuredContent.citations);
 ```
 
 [`examples/run-http-session.ts`](examples/run-http-session.ts) is exactly
-this — a real external client harness you can run yourself against the live
+this — an external client harness you can run yourself against the live
 deployment or a local dev server:
 
 ```bash
@@ -99,10 +99,9 @@ node --experimental-strip-types examples/run-http-session.ts https://repoask.ver
 ```
 
 It writes the full raw request/response transcript to
-[`examples/http-transcript.json`](examples/http-transcript.json) — real
-`index_repo`/`ask_repo` calls against a real public repo (`octocat/Spoon-Knife`),
-with genuine citations (exact `path`/`startLine`/`endLine`/`score`), not
-fabricated output.
+[`examples/http-transcript.json`](examples/http-transcript.json) —
+`index_repo`/`ask_repo` calls against a public repo (`octocat/Spoon-Knife`),
+with citations (exact `path`/`startLine`/`endLine`/`score`).
 
 ### One engine, two entry points
 
