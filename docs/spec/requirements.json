@@ -133,6 +133,6 @@
     "tests": [
       "tests/analytics.test.ts"
     ],
-    "evidence": "Bucket tests and the no-browser no-op test. manual: with no key, the Node build and the GitHub Pages export were built and `grep -rli posthog` over .next/static and out/ found nothing, and none of the 8 scripts the page references mentions it; with a placeholder key the 315 KB SDK chunk exists but no page HTML references it, and the three /ingest rewrites are emitted. Not exercised against a PostHog project because no token was available, so event delivery is unverified."
+    "evidence": "PR 24: bucket tests and the no-browser no-op test. manual: with no key, the Node build and the GitHub Pages export were built and `grep -rli posthog` over .next/static and out/ found nothing, and none of the 8 scripts the page references mentions it; with a placeholder key the 315 KB SDK chunk exists but no page HTML references it, and the three /ingest rewrites are emitted. Not exercised against a PostHog project because no token was available, so event delivery is unverified."
   }
 ]
