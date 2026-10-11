@@ -1,0 +1,35 @@
+name: CI
+
+# Mirrors the workflow already on `develop` so that both branches of the
+# GitFlow pair are gated. Before this, `main` carried only release.yml, so a
+# release could be cut from an untested tree.
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # --ignore-scripts: the native postinstall downloads (transformers.js
+      # model binaries) are not needed for typecheck/lint/test/build.
+      - run: npm ci --ignore-scripts
+      # `app/layout.tsx` references Next's generated `LayoutProps` type, so
+      # typegen must run before `tsc --noEmit` or the typecheck fails on a
+      # missing name rather than a real error.
+      - run: npx next typegen
+        if: ${{ hashFiles('next.config.*') != '' }}
+      - run: npm run verify

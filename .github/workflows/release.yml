@@ -14,7 +14,27 @@ permissions:
   contents: write
 
 jobs:
+  # Gate the release on the same checks CI runs. Without this, `release` only
+  # verified that the version string matched package.json — a release could be
+  # tagged and published from a tree that does not typecheck, lint, or pass
+  # its tests, which is worse than having no release automation at all.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx next typegen
+        if: ${{ hashFiles('next.config.*') != '' }}
+      - run: npm run verify
+
   release:
+    needs: verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
