@@ -32,8 +32,8 @@ API keys are entered in the app and stay in the browser; the app itself needs no
 
 | Variable | Purpose |
 |---|---|
-| `NEXT_PUBLIC_POSTHOG_KEY` | PostHog project token. Unset (the default) means no analytics at all: the SDK is not shipped and no request is made. |
-| `NEXT_PUBLIC_POSTHOG_HOST` | Static export only (GitHub Pages has no server to proxy through): the PostHog ingestion host, for example `https://us.i.posthog.com`. On a Node host leave it unset so events go through this origin's `/ingest` proxy. |
+| `NEXT_PUBLIC_POSTHOG_KEY` | PostHog project token. Unset (the default) means no analytics at all: the SDK is not shipped, no request is made and the `/ingest` proxy route is not registered (it returns 404). |
+| `NEXT_PUBLIC_POSTHOG_HOST` | Static export only (GitHub Pages has no server to proxy through): the PostHog ingestion host, for example `https://us.i.posthog.com`. On a Node host leave it unset so events go through this origin's `/ingest` proxy, which exists only when the key is set. |
 
 What is sent when analytics are on: page views, how large an index was (as a bucket) and how long it took, and that a question was asked about a public `owner/name` with its length as a bucket. Never the question, the code, the answer or the key. The PostHog project needs cookieless mode enabled, and "Discard client IP data" switched on in its settings to keep IP addresses out (the SDK's own `ip` option is deprecated and does nothing). Details in [ADR 0003](docs/adr/0003-product-analytics-without-user-data.md).
 

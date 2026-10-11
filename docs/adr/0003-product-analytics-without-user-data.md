@@ -14,7 +14,8 @@ Use posthog-js behind a small facade (`lib/analytics.ts`) with a fixed allowlist
 - No user data. Question text, repository files, answers, prompts, the provider key, names, emails and file paths are never sent. Free-text sizes travel as buckets (`<40`, `40-120`, `120-300`, `300+`) and index sizes as buckets of passages. The only identifier is the public `owner/name` of a repository the user chose to index.
 - Cookieless. `cookieless_mode: "always"` and `person_profiles: "never"`: no cookies, no storage, no `identify()`. PostHog derives a daily anonymous id on its servers, so no consent banner is needed and a visitor cannot be followed across days.
 - Explicit only. `autocapture: false` (autocapture scrapes element text), exception capture off (error messages can name repository files), session recording off, `capture_pageview: false` with one manual `$pageview` that survives App Router navigations, `respect_dnt: true`.
-- Same-origin transport. On a Node host, `next.config.ts` rewrites `/ingest/*` to PostHog so tracking blockers that filter by domain do not drop events. The static export has no server, so that build names the PostHog host in `NEXT_PUBLIC_POSTHOG_HOST`.
+- Same-origin transport. On a Node host with a key, `next.config.ts` rewrites `/ingest/*` to PostHog so tracking blockers that filter by domain do not drop events. The static export has no server, so that build names the PostHog host in `NEXT_PUBLIC_POSTHOG_HOST`.
+- The proxy exists only with a key. A rewrite is a server-side route that exists whether or not any client calls it, so registering it unconditionally would make every deployment forward any body posted to `/ingest/*` to PostHog's public ingestion API: an open relay on the owner's domain that costs bandwidth and attributes abuse to that origin. Keeping the SDK out of the bundle does not close it; only not registering the route does. Without a key `/ingest/*` is a plain 404.
 
 ## Consequences
 

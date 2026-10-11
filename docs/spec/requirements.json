@@ -120,7 +120,8 @@
       "Given no NEXT_PUBLIC_POSTHOG_KEY at build time, then no script loaded on page view contains the analytics SDK, no analytics request is made and nothing is logged.",
       "Given a key, then the app captures only $pageview (on load and on route change), index_built (chunk_bucket, duration_ms) when an index finishes, and repo_asked (repo as the public owner/name, question_length_bucket) when a question is submitted; every event carries app: \"repoask\" and surface: \"web\".",
       "Given any event, then it carries no question text, repository content, answer, prompt, provider key, name, email or file path; sizes travel as coarse buckets.",
-      "Given a Node host, then analytics requests go to this origin under /ingest and are proxied to PostHog; given the static export, then they go to the host named in NEXT_PUBLIC_POSTHOG_HOST.",
+      "Given a Node host and a key, then analytics requests go to this origin under /ingest and are proxied to PostHog's ingestion hosts only; given the static export, then they go to the host named in NEXT_PUBLIC_POSTHOG_HOST.",
+      "Given no key, then the /ingest route is not registered: a request to /ingest/* on a Node host returns 404 and is not forwarded anywhere. A rewrite is a server-side route that exists whether or not a client calls it, so an ungated one would relay any request body to PostHog's public ingestion API from this origin.",
       "Given a browser that sends Do Not Track, then nothing is captured."
     ],
     "implementation": [
@@ -131,8 +132,9 @@
       "next.config.ts"
     ],
     "tests": [
-      "tests/analytics.test.ts"
+      "tests/analytics.test.ts",
+      "tests/ingest-proxy.test.ts"
     ],
-    "evidence": "PR 24: bucket tests and the no-browser no-op test. manual: with no key, the Node build and the GitHub Pages export were built and `grep -rli posthog` over .next/static and out/ found nothing, and none of the 8 scripts the page references mentions it; with a placeholder key the 315 KB SDK chunk exists but no page HTML references it, and the three /ingest rewrites are emitted. Not exercised against a PostHog project because no token was available, so event delivery is unverified."
+    "evidence": "PR 24: bucket tests and the no-browser no-op test. manual: with no key, the Node build and the GitHub Pages export were built and `grep -rli posthog` over .next/static and out/ found nothing, and none of the 8 scripts the page references mentions it; with a placeholder key the 315 KB SDK chunk exists but no page HTML references it, and the three /ingest rewrites are emitted. Proxy gate: `tests/ingest-proxy.test.ts` imports the real `next.config.ts` and calls its `rewrites()` with the key unset, empty and set, and under the static export; it was run against the ungated config and failed. manual: with no key, `.next/routes-manifest.json` lists no rewrites and on `next start` `POST /ingest/e/` and `GET /ingest/static/array.js` return 404; with a throwaway key the manifest lists the three rewrites (no request was sent to PostHog). Not exercised against a PostHog project because no token was available, so event delivery is unverified."
   }
 ]
