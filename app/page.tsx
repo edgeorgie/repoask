@@ -5,6 +5,7 @@ import Answer from "@/components/Answer";
 import CodeViewer from "@/components/CodeViewer";
 import KeyBox, { loadSettings } from "@/components/KeyBox";
 import type { LlmSettings } from "@/components/KeyBox";
+import { chunkBucket, lengthBucket, track } from "@/lib/analytics";
 import type { Chunk } from "@/lib/chunk";
 import { Embedder } from "@/lib/embedder";
 import { indexRepo } from "@/lib/indexer";
@@ -66,9 +67,12 @@ export default function Home() {
     setStage(null);
     try {
       embedder.current ??= new Embedder();
-      setIndex(await indexRepo(ref, embedder.current, setStage));
+      const startedAt = performance.now();
+      const built = await indexRepo(ref, embedder.current, setStage);
+      setIndex(built);
       setMessages([]);
       setActive(null);
+      track("index_built", { chunk_bucket: chunkBucket(built.chunks.length), duration_ms: Math.round(performance.now() - startedAt) });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Indexing failed");
     } finally {
@@ -81,6 +85,8 @@ export default function Home() {
 
   const ask = async (q: string) => {
     if (!index || !embedder.current || !q.trim()) return;
+    // Only the public repo name and the question's size bucket leave the browser, never the question.
+    track("repo_asked", { repo: `${index.ref.owner}/${index.ref.repo}`, question_length_bucket: lengthBucket(q.trim().length) });
     setQuestion("");
     setAsking(true);
     const base = messages.length;

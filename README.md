@@ -28,7 +28,14 @@ Open http://localhost:3000. Requires Node 22 or newer.
 
 ## Configuration
 
-No environment variables. API keys are entered in the app and stay in the browser.
+API keys are entered in the app and stay in the browser; the app itself needs no environment variables. Usage analytics are off unless a deployment opts in:
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_POSTHOG_KEY` | PostHog project token. Unset (the default) means no analytics at all: the SDK is not shipped and no request is made. |
+| `NEXT_PUBLIC_POSTHOG_HOST` | Static export only (GitHub Pages has no server to proxy through): the PostHog ingestion host, for example `https://us.i.posthog.com`. On a Node host leave it unset so events go through this origin's `/ingest` proxy. |
+
+What is sent when analytics are on: page views, how large an index was (as a bucket) and how long it took, and that a question was asked about a public `owner/name` with its length as a bucket. Never the question, the code, the answer or the key. The PostHog project needs cookieless mode enabled, and "Discard client IP data" switched on in its settings to keep IP addresses out (the SDK's own `ip` option is deprecated and does nothing). Details in [ADR 0003](docs/adr/0003-product-analytics-without-user-data.md).
 
 ## How it works
 
@@ -84,6 +91,7 @@ Motion, components and rationale: [docs/design-system.md](docs/design-system.md)
 | Embeddings | Computed in a worker | Memory only |
 | Question and top passages | Sent to the chosen model provider | Not stored |
 | Provider key | localStorage, sent only to the provider | This browser |
+| Usage analytics (opt-in) | Event names, size buckets and the public repo name to PostHog, cookieless, only when `NEXT_PUBLIC_POSTHOG_KEY` is set | Nothing in the browser |
 
 ## Limits
 
@@ -96,7 +104,7 @@ Motion, components and rationale: [docs/design-system.md](docs/design-system.md)
 The app is fully client-side, so it can be hosted as static files.
 
 - **GitHub Pages:** `npm run deploy:pages` builds a static export and publishes it to the `gh-pages` branch. Enable Pages from that branch; on a free plan the repository must be public.
-- **Vercel or any Node host:** use the Deploy button above. No configuration is needed.
+- **Vercel or any Node host:** use the Deploy button above. No configuration is needed; analytics stay off until the variables in [Configuration](#configuration) are set.
 
 ## Documentation
 
