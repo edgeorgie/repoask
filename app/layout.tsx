@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Archivo, Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@/components/Analytics";
 import "./globals.css";
 
 const display = Archivo({ variable: "--font-display", subsets: ["latin"], axes: ["wdth"] });
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

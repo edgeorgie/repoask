@@ -67,6 +67,18 @@ Status: Implemented, not verified end to end.
 
 - Given a provider key, then it is kept in sessionStorage for the tab by default, kept on the device only when the user ticks "Remember on this device", and removable with "Clear key"; the provider choice persists.
 
+### FR-8 Product analytics without user data
+
+Status: Implemented, not verified end to end.
+
+- Given no `NEXT_PUBLIC_POSTHOG_KEY` at build time, then no script loaded on page view contains the analytics SDK, no analytics request is made and nothing is logged.
+- Given a key, then the app captures only `$pageview` (on load and on route change), `index_built` (`chunk_bucket`, `duration_ms`) when an index finishes, and `repo_asked` (`repo` as the public owner/name, `question_length_bucket`) when a question is submitted; every event carries `app: "repoask"` and `surface: "web"`.
+- Given any event, then it carries no question text, repository content, answer, prompt, provider key, name, email or file path; sizes travel as coarse buckets.
+- Given a Node host, then analytics requests go to this origin under `/ingest` and are proxied to PostHog; given the static export, then they go to the host named in `NEXT_PUBLIC_POSTHOG_HOST`.
+- Given a browser that sends Do Not Track, then nothing is captured.
+
+Non-goals: cookies or browser storage for analytics, identifying a visitor across days, session replay, autocapture, consent banners.
+
 ## Open risks
 
 - GitHub allows 60 unauthenticated API calls per hour per IP; each index uses two.

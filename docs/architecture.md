@@ -44,14 +44,18 @@ sequenceDiagram
 | `lib/vector.ts` | Cosine retrieval and diversity |
 | `lib/rag.ts` | Prompt and citation helpers |
 | `components/` | Answer, code viewer, key box |
+| `lib/analytics.ts` | Analytics facade: no-op without a key, cookieless PostHog with a fixed event allowlist otherwise |
+| `components/Analytics.tsx` | Manual `$pageview`; renders nothing without a key |
+| `instrumentation-client.ts` | Loads the analytics SDK on idle, only when a key exists |
 
 ## Principles
 
 - Pure logic lives in `lib/` and is tested without a browser; components stay thin.
 - Network, storage and model replies are validated at the boundary.
-- Secrets and user content stay in the browser.
+- Secrets and user content stay in the browser. Analytics, when a deployment opts in, sends usage shapes only (ADR 0003).
 
 ## Decisions
 
 - [Embeddings run locally in a worker](adr/0001-embeddings-run-locally-in-a-worker.md)
 - [Bring your own key, browser only](adr/0002-bring-your-own-key-browser-only.md)
+- [Product analytics without user data](adr/0003-product-analytics-without-user-data.md)

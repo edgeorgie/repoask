@@ -111,5 +111,28 @@
       "tests/keystore.test.ts"
     ],
     "evidence": "Key store tests; typecheck and build (SEC-002). Not exercised in a browser because the app needs a model download that awaits the user's permission."
+  },
+  {
+    "id": "FR-8",
+    "title": "Product analytics without user data",
+    "status": "Implemented, not verified end to end",
+    "acceptance": [
+      "Given no NEXT_PUBLIC_POSTHOG_KEY at build time, then no script loaded on page view contains the analytics SDK, no analytics request is made and nothing is logged.",
+      "Given a key, then the app captures only $pageview (on load and on route change), index_built (chunk_bucket, duration_ms) when an index finishes, and repo_asked (repo as the public owner/name, question_length_bucket) when a question is submitted; every event carries app: \"repoask\" and surface: \"web\".",
+      "Given any event, then it carries no question text, repository content, answer, prompt, provider key, name, email or file path; sizes travel as coarse buckets.",
+      "Given a Node host, then analytics requests go to this origin under /ingest and are proxied to PostHog; given the static export, then they go to the host named in NEXT_PUBLIC_POSTHOG_HOST.",
+      "Given a browser that sends Do Not Track, then nothing is captured."
+    ],
+    "implementation": [
+      "lib/analytics.ts",
+      "components/Analytics.tsx",
+      "instrumentation-client.ts",
+      "app/page.tsx",
+      "next.config.ts"
+    ],
+    "tests": [
+      "tests/analytics.test.ts"
+    ],
+    "evidence": "PR 24: bucket tests and the no-browser no-op test. manual: with no key, the Node build and the GitHub Pages export were built and `grep -rli posthog` over .next/static and out/ found nothing, and none of the 8 scripts the page references mentions it; with a placeholder key the 315 KB SDK chunk exists but no page HTML references it, and the three /ingest rewrites are emitted. Not exercised against a PostHog project because no token was available, so event delivery is unverified."
   }
 ]
