@@ -2,7 +2,7 @@
 
 ## Overview
 
-The indexer lists the tree with one API call, downloads files from raw.githubusercontent.com, chunks them and embeds in a worker. A question is embedded, matched against chunk vectors, and the top passages are sent to the model. When a deployment sets `NEXT_PUBLIC_POSTHOG_KEY`, a small facade reports usage shapes (page views, index size and duration, question size buckets) to PostHog through a same-origin proxy; without the key it is absent from the bundle.
+The indexer lists the tree with one API call, downloads files from raw.githubusercontent.com, chunks them and embeds in a worker. A question is embedded, matched against chunk vectors, and the top passages are sent to the model. When a deployment sets `NEXT_PUBLIC_POSTHOG_KEY`, a small facade reports usage shapes (page views, index size and duration, question size buckets) to PostHog through a same-origin proxy; without the key it is absent from the bundle and the proxy route is not registered.
 
 ## Modules
 
