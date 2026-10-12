@@ -29,7 +29,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^6"
   },
   "description": "Ask any public GitHub repo a question. Local embeddings in the browser, answers that point at the exact lines.",
   "license": "MIT",
